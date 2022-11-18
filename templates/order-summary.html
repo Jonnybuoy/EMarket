@@ -172,10 +172,13 @@
             <td>
             {% if order_item.item.discount_price %}
                 ${{ order_item.get_total_item_discount_price }}
-                <span class="badge badge-success">Saving ${{ order_item.get_amount_saved }}<span>
+                <span class="badge badge-success">Saving ${{ order_item.get_amount_saved }}</span>
             {% else %}
                 ${{ order_item.get_total_item_price }}
             {% endif %}
+            <a style='color: red;' href='{% url 'core:remove-from-cart' order_item.item.slug %}'>
+              <i class="fas fa-trash-alt float-right"></i>
+            </a>
             </td>
 
         </tr>

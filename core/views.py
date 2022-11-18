@@ -6,6 +6,8 @@ from django.shortcuts import render, get_object_or_404
 from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
+
+from .forms import CheckOutForm
 from .models import Item, Order, OrderItem
 
 
@@ -33,8 +35,19 @@ class OrderSummaryView(LoginRequiredMixin, View):
             return redirect("/")
 
 
-def checkout(request):
-    return render(request, "checkout-page.html")
+class CheckoutView(View):
+    def get(self, *args, **kwargs):
+        form = CheckOutForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, "checkout-page.html", context)
+    
+    def post(self, *args, **kwargs):
+        form = CheckOutForm(self.request.POST or None)
+        if form.is_valid():
+            print('Form is valid')
+            return redirect('core:checkout')
 
 
 @login_required
@@ -81,7 +94,7 @@ def remove_from_cart(request, slug):
             )[0]
             order.items.remove(order_item)
             messages.info(request, "This item was removed your cart.")
-            return redirect("core:product", slug=slug)
+            return redirect("core:order-summary")
         else:
             messages.info(request, "This item was not in your cart.")
             return redirect("core:product", slug=slug)
@@ -102,8 +115,11 @@ def remove_single_item_from_cart(request, slug):
                 user=request.user,
                 ordered=False
             )[0]
-            order_item.quantity -= 1
-            order_item.save()
+            if order_item.quantity > 1:
+                order_item.quantity -= 1
+                order_item.save()
+            else:
+                order.items.remove(order_item)
             messages.info(request, "This item quantity was updated.")
             return redirect("core:order-summary")
         else:
