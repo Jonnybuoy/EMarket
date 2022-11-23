@@ -13,31 +13,31 @@
         <span class="text-muted">${{ order_item.get_final_price }}</span>
     </li>
     {% endfor %}
-    {% comment %} {% if order.coupon %} {% endcomment %}
+    {% if order.coupon %}
     <li class="list-group-item d-flex justify-content-between bg-light">
         <div class="text-success">
         <h6 class="my-0">Promo code</h6>
-        <small>x</small>
+        <small>{{ order.coupon.code }}</small>
         </div>
-        <span class="text-success">X</span>
+        <span class="text-success">{{ order.coupon.amount }}</span>
     </li>
-    {% comment %} {% endif %} {% endcomment %}
+    {% endif %}
     <li class="list-group-item d-flex justify-content-between">
         <span>Total (USD)</span>
-        <strong>${{ order.get_total }}</strong>
+        <strong>${{ order.get_total_price }}</strong>
     </li>
     </ul>
 
-    {% comment %} {% if DISPLAY_COUPON_FORM %} {% endcomment %}
-    <form class="card p-2" action="" method="POST">
+    {% if DISPLAY_COUPON_FORM %}
+    <form class="card p-2" action="{% url 'core:add-coupon' %}" method="POST">
         {% csrf_token %}
         <div class="input-group">
-            X
+            {{ couponform.code }}
             <div class="input-group-append">
             <button class="btn btn-secondary btn-md waves-effect m-0" type="submit">Redeem</button>
             </div>
         </div>
     </form>
-    {% comment %} {% endif %} {% endcomment %}
+    {% endif %}
 
 </div>
