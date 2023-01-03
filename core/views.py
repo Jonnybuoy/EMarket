@@ -1,3 +1,5 @@
+import random
+import string
 import stripe
 
 
@@ -11,8 +13,8 @@ from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from .forms import CheckOutForm, CouponForm
-from .models import Item, Order, OrderItem, BillingAddress, Payment, Coupon
+from .forms import CheckOutForm, CouponForm, RefundForm
+from .models import Item, Order, OrderItem, BillingAddress, Payment, Coupon, Refund
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -137,6 +139,7 @@ class PaymentView(View):
             
             order.ordered = True
             order.payment = payment
+            order.ref_code = create_ref_code()
             order.save()
             
             messages.success(self.request, "Your order was successful!")
@@ -178,6 +181,58 @@ class PaymentView(View):
             # Something else happened, completely unrelated to Stripe
             messages.warning(self.request, "A serious error occurred. Our team has been notified.")
             return redirect("/")
+
+
+class AddCouponView(View):
+    def post(self, *args, **kwargs):
+        form = CouponForm(self.request.POST or None)
+        if form.is_valid():
+            try:
+                code = form.cleaned_data.get('code')
+                order = Order.objects.get(user=self.request.user, ordered=False)
+                coupon = get_coupon(self.request, code)
+                order.coupon = coupon
+                order.save
+                messages.success(self.request, "Successfully added coupon")
+                return redirect("core:checkout")
+                
+            except ObjectDoesNotExist:
+                messages.info(self.request, "You do not have an active order.")
+                return redirect("core:checkout")
+
+
+class RequestRefundView(View):
+    def get(self, *args, **kwargs):
+        form = RefundForm()
+        context = {
+            'form': form
+        }
+        return render(self.request, "request_refund.html", context)
+        
+    def post(self, *args, **kwargs):
+        form = RefundForm(self.request.POST)
+        if form.is_valid():
+            ref_code = form.cleaned_data.get('ref_code')
+            message = form.cleaned_data.get('message')
+            email = form.cleaned_data.get('email')
+            # edit the order.
+            try:
+                order = Order.objects.get(ref_code=ref_code)
+                order.refund_requested = True
+                order.save()
+
+                # store the refund.
+                refund = Refund()
+                refund.order = order
+                refund.reason = message
+                refund.email = email
+                refund.save()
+                messages.info(self.request, "Your request was received.")
+                return redirect("core:request-refund")
+            
+            except ObjectDoesNotExist:
+                messages.info(self.request, "This order does not exist")
+                return redirect("core:request-refund")
 
 
 @login_required
@@ -269,19 +324,6 @@ def get_coupon(request, code):
         messages.info(request, "This coupon does not exist.")
         return redirect("core:checkout")
 
-class AddCouponView(View):
-    def post(self, *args, **kwargs):
-        form = CouponForm(self.request.POST or None)
-        if form.is_valid():
-            try:
-                code = form.cleaned_data.get('code')
-                order = Order.objects.get(user=self.request.user, ordered=False)
-                coupon = get_coupon(self.request, code)
-                order.coupon = coupon
-                order.save
-                messages.success(self.request, "Successfully added coupon")
-                return redirect("core:checkout")
-                
-            except ObjectDoesNotExist:
-                messages.info(self.request, "You do not have an active order.")
-                return redirect("core:checkout")
+
+def create_ref_code():
+    return ''.join(random.choices(string.ascii_lowercase + string.digits, k=20)) # k is just a special arg for the length of the string
