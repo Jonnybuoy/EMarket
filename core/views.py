@@ -257,7 +257,7 @@ class PaymentView(View):
                     userprofile.one_click_purchasing = True
                     userprofile.save()
 
-            amount = int(order.get_total() * 100)
+            amount = int(order.get_total_price() * 100)
 
             try:
 
@@ -280,7 +280,7 @@ class PaymentView(View):
                 payment = Payment()
                 payment.stripe_charge_id = charge['id']
                 payment.user = self.request.user
-                payment.amount = order.get_total()
+                payment.amount = order.get_total_price()
                 payment.save()
 
                 # assign the payment to the order

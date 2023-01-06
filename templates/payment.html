@@ -123,7 +123,7 @@ button:hover {
             {% endif %}
 
             <div class="current-card-form">
-              <form action="." method="post" class="stripe-form">
+              <form action="." method="POST" class="stripe-form">
                   {% csrf_token %}
                   <input type="hidden" name="use_default" value="true">
                   <div class="stripe-form-row">
@@ -134,7 +134,7 @@ button:hover {
             </div>
 
             <div class="new-card-form">
-              <form action="." method="post" class="stripe-form" id="stripe-form">
+              <form action="." method="POST" class="stripe-form" id="stripe-form">
                   {% csrf_token %}
                   <div class="stripe-form-row" id="creditCard">
                       <label for="card-element" id="stripeBtnLabel">
