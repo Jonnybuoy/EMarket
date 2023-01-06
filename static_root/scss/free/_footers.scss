@@ -1,6 +1,7 @@
 // Footers
 footer {
   &.page-footer {
+    position: fixed;
     bottom: 0;
     color: $white-base;
     .container-fluid {

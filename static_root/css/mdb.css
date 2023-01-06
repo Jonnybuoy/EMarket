@@ -7473,6 +7473,7 @@ body.scrollable {
   border-color: #0f0f0f; }
 
 footer.page-footer {
+  position: fixed;
   bottom: 0;
   color: #fff; }
   footer.page-footer .container-fluid {
