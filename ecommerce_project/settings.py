@@ -59,6 +59,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://kemarket-project-django.herokuapp.com/'
+]
+
 ROOT_URLCONF = 'ecommerce_project.urls'
 
 TEMPLATES = [
