@@ -60,7 +60,7 @@ MIDDLEWARE = [
 ]
 
 CSRF_TRUSTED_ORIGINS = [
-    'https://kemarket-project-django.herokuapp.com/'
+    'https://kemarket-project-django.herokuapp.com'
 ]
 
 ROOT_URLCONF = 'ecommerce_project.urls'
