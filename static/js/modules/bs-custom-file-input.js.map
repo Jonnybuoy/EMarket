@@ -1,0 +1,250 @@
+{
+version: 3,
+file: "bs-custom-file-input.js",
+sources: [
+"../src/selector.js",
+"../src/util.js",
+"../src/eventHandlers.js",
+"../src/index.js"
+],
+sourcesContent: [
+"const Selector = {
+  CUSTOMFILE: '.custom-file input[type="file"]',
+  CUSTOMFILELABEL: '.custom-file-label',
+  FORM: 'form',
+  INPUT: 'input',
+}
+
+export default Selector
+",
+"import Selector from './selector'
+
+const textNodeType = 3
+const getDefaultText = (input) => {
+  let defaultText = ''
+
+  const label = input.parentNode.querySelector(Selector.CUSTOMFILELABEL)
+
+  if (label) {
+    defaultText = label.textContent
+  }
+
+  return defaultText
+}
+
+const findFirstChildNode = (element) => {
+  if (element.childNodes.length > 0) {
+    const childNodes = [].slice.call(element.childNodes)
+
+    for (let i = 0; i < childNodes.length; i++) {
+      const node = childNodes[i]
+      if (node.nodeType !== textNodeType) {
+        return node
+      }
+    }
+  }
+
+  return element
+}
+
+const restoreDefaultText = (input) => {
+  const defaultText = input.bsCustomFileInput.defaultText
+  const label = input.parentNode.querySelector(Selector.CUSTOMFILELABEL)
+
+  if (label) {
+    const element = findFirstChildNode(label)
+
+    element.textContent = defaultText
+  }
+}
+
+export {
+  getDefaultText,
+  findFirstChildNode,
+  restoreDefaultText,
+}
+",
+"import { findFirstChildNode, restoreDefaultText } from './util'
+import Selector from './selector'
+
+const fileApi = !!window.File
+const FAKE_PATH = 'fakepath'
+const FAKE_PATH_SEPARATOR = '\\'
+
+const getSelectedFiles = (input) => {
+  if (input.hasAttribute('multiple') && fileApi) {
+    return [].slice.call(input.files)
+      .map((file) => file.name)
+      .join(', ')
+  }
+
+  if (input.value.indexOf(FAKE_PATH) !== -1) {
+    const splittedValue = input.value.split(FAKE_PATH_SEPARATOR)
+
+    return splittedValue[splittedValue.length - 1]
+  }
+
+  return input.value
+}
+
+function handleInputChange() {
+  const label = this.parentNode.querySelector(Selector.CUSTOMFILELABEL)
+
+  if (label) {
+    const element = findFirstChildNode(label)
+    const inputValue = getSelectedFiles(this)
+
+    if (inputValue.length) {
+      element.textContent = inputValue
+    } else {
+      restoreDefaultText(this)
+    }
+  }
+}
+
+function handleFormReset() {
+  const customFileList = [].slice.call(this.querySelectorAll(Selector.INPUT))
+    .filter((input) => !!input.bsCustomFileInput)
+
+  for (let i = 0, len = customFileList.length; i < len; i++) {
+    restoreDefaultText(customFileList[i])
+  }
+}
+
+export {
+  handleInputChange,
+  handleFormReset,
+}
+",
+"import { getDefaultText, restoreDefaultText } from './util'
+import { handleFormReset, handleInputChange } from './eventHandlers'
+import Selector from './selector'
+
+const customProperty = 'bsCustomFileInput'
+const Event = {
+  FORMRESET   : 'reset',
+  INPUTCHANGE : 'change',
+}
+
+const bsCustomFileInput = {
+  init(inputSelector = Selector.CUSTOMFILE, formSelector = Selector.FORM) {
+    const customFileInputList = [].slice.call(document.querySelectorAll(inputSelector))
+    const formList = [].slice.call(document.querySelectorAll(formSelector))
+
+    for (let i = 0, len = customFileInputList.length; i < len; i++) {
+      const input = customFileInputList[i]
+
+      Object.defineProperty(input, customProperty, {
+        value: {
+          defaultText: getDefaultText(input),
+        },
+        writable: true,
+      })
+
+      handleInputChange.call(input)
+      input.addEventListener(Event.INPUTCHANGE, handleInputChange)
+    }
+
+    for (let i = 0, len = formList.length; i < len; i++) {
+      formList[i].addEventListener(Event.FORMRESET, handleFormReset)
+      Object.defineProperty(formList[i], customProperty, {
+        value: true,
+        writable: true,
+      })
+    }
+  },
+
+  destroy() {
+    const formList = [].slice.call(document.querySelectorAll(Selector.FORM))
+      .filter((form) => !!form.bsCustomFileInput)
+    const customFileInputList = [].slice.call(document.querySelectorAll(Selector.INPUT))
+      .filter((input) => !!input.bsCustomFileInput)
+
+    for (let i = 0, len = customFileInputList.length; i < len; i++) {
+      const input = customFileInputList[i]
+
+      restoreDefaultText(input)
+      input[customProperty] = undefined
+
+      input.removeEventListener(Event.INPUTCHANGE, handleInputChange)
+    }
+
+    for (let i = 0, len = formList.length; i < len; i++) {
+      formList[i].removeEventListener(Event.FORMRESET, handleFormReset)
+      formList[i][customProperty] = undefined
+    }
+  },
+}
+
+export default bsCustomFileInput
+"
+],
+names: [
+"Selector",
+"CUSTOMFILE",
+"CUSTOMFILELABEL",
+"FORM",
+"INPUT",
+"textNodeType",
+"getDefaultText",
+"input",
+"defaultText",
+"label",
+"parentNode",
+"querySelector",
+"textContent",
+"findFirstChildNode",
+"element",
+"childNodes",
+"length",
+"slice",
+"call",
+"i",
+"node",
+"nodeType",
+"restoreDefaultText",
+"bsCustomFileInput",
+"fileApi",
+"window",
+"File",
+"FAKE_PATH",
+"FAKE_PATH_SEPARATOR",
+"getSelectedFiles",
+"hasAttribute",
+"files",
+"map",
+"file",
+"name",
+"join",
+"value",
+"indexOf",
+"splittedValue",
+"split",
+"handleInputChange",
+"inputValue",
+"handleFormReset",
+"customFileList",
+"querySelectorAll",
+"filter",
+"len",
+"customProperty",
+"Event",
+"FORMRESET",
+"INPUTCHANGE",
+"init",
+"inputSelector",
+"formSelector",
+"customFileInputList",
+"document",
+"formList",
+"Object",
+"defineProperty",
+"writable",
+"addEventListener",
+"destroy",
+"form",
+"undefined",
+"removeEventListener"
+],
+mappings: "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"
+}
