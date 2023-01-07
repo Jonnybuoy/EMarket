@@ -19,9 +19,9 @@ This is an e-commerce website built using Django, a high-level Python web framew
 ## Configuration
 You will need to set the following environment variables in order for the application to function properly:
 
-`SECRET_KEY`: Django secret key for security purposes
-`STRIPE_PUBLISHABLE_KEY`: Publishable key for Stripe API
-`STRIPE_SECRET_KEY`: Secret key for Stripe API
+- `SECRET_KEY`: Django secret key for security purposes
+- `STRIPE_PUBLISHABLE_KEY`: Publishable key for Stripe API
+- `STRIPE_SECRET_KEY`: Secret key for Stripe API
 
 ## License
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
