@@ -1,6 +1,9 @@
 # KEmarket
 This is an e-commerce website built using Django, a high-level Python web framework. The project is hosted on Heroku and can be accessed [here](https://kemarket-project-django.herokuapp.com/) and allows users to browse and purchase products, as well as provides a secure checkout process using Stripe for payment processing.
 
+## Demo
+[screen-capture.webm](https://user-images.githubusercontent.com/35404617/211166669-5cf45c24-c20a-440c-b46d-d9102ea15905.webm)
+
 ## Features
 - Browse products by category or search for specific items
 - View product details and add items to cart
