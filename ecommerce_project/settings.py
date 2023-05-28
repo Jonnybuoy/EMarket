@@ -10,8 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+from dotenv import load_dotenv
 import os
 from pathlib import Path
+
+# Load envirronment variables
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +25,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-# SECRET_KEY = 'django-insecure-%1j!7^b*vp(9!*m7$l!q744b@9%#erw5h+u&s-s+#52%znaqw8'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -90,8 +94,12 @@ WSGI_APPLICATION = 'ecommerce_project.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': os.environ.get('PG_NAME'),
+        'USER': os.environ.get('PG_USER'),
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'HOST': os.environ.get('PG_HOST'),
+        'PORT': os.environ.get('PG_PORT'),
     }
 }
 
@@ -160,5 +168,5 @@ STRIPE_SECRET_KEY = "sk_test_51MMCYcJ0N63AvFXSkgn6H9bhPV9TiYLlvmIdWvAyC8NnwRPM3M
 STRIPE_PUBLIC_KEY = "pk_test_51MMCYcJ0N63AvFXSWWcVA9mzQ2P8yJK8GIACoXZUMFApoPEcIb88wfeKvcX6Ie98hq1gVdLeNqTe1lDRMZPQtflP002vpkmmlG"
 
 
-import django_heroku
-django_heroku.settings(locals())
+# import django_heroku
+# django_heroku.settings(locals())
