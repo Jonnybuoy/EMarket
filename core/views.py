@@ -13,7 +13,7 @@ from django.views.generic import ListView, DetailView, View
 from django.shortcuts import redirect
 from django.utils import timezone
 
-from .forms import CheckOutForm, CouponForm, RefundForm, PaymentForm
+from .forms import CheckOutForm, CouponForm, RefundForm, PaymentForm, ItemForm
 from .models import Item, Order, OrderItem, Address, Payment, Coupon, Refund, UserProfile
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
@@ -42,6 +42,35 @@ class OrderSummaryView(LoginRequiredMixin, View):
             messages.warning(request, "The order does not exist")
             return redirect("/")
 
+
+def item_add(request):
+    if request.method == "POST":
+        form = ItemForm(request.POST)
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            price = form.cleaned_data.get('price')
+            discount_price = form.cleaned_data.get('discount_price')
+            category = form.cleaned_data.get('category')
+            label = form.cleaned_data.get('label')
+            slug = form.cleaned_data.get('slug')
+            description = form.cleaned_data.get('description')
+            image = form.cleaned_data.get('image')
+            
+            item = Item()
+            item.title = title
+            item.price = price
+            item.discount_price = discount_price
+            item.category = category
+            item.label = label
+            item.slug = slug
+            item.description = description
+            item.image = image
+            item.save()
+            return redirect("/")
+    form = ItemForm()
+    return render(request, "item_add.html", {"form": form})
+        
+        
 class CheckoutView(View):
     def get(self, *args, **kwargs):
         try:

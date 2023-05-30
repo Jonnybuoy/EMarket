@@ -7,6 +7,29 @@ PAYMENT_CHOICES = (
     ('P', 'Paypal')
 )
 
+CATEGORY_CHOICES = (
+    ('S', 'Shirt'),
+    ('SW', 'Sport wear'),
+    ('OW', 'Outwear')
+)
+
+LABEL_CHOICES = (
+    ('P', 'primary'),
+    ('S', 'secondary'),
+    ('D', 'danger')
+)
+
+
+class ItemForm(forms.Form):
+    title = forms.CharField(required=True)
+    price = forms.FloatField(required=True)
+    discount_price = forms.FloatField(required=False)
+    category = forms.ChoiceField(choices=CATEGORY_CHOICES, widget=forms.RadioSelect())
+    label = forms.ChoiceField(choices=LABEL_CHOICES, widget=forms.RadioSelect())
+    slug = forms.SlugField()
+    description = forms.Textarea()
+    image = forms.ImageField()
+
 
 class CheckOutForm(forms.Form):
     shipping_address = forms.CharField(required=False)
